@@ -1,19 +1,22 @@
-import React, { useEffect } from 'react';
+// ConsumerComponent.js
+import React, { useEffect, useCallback } from 'react';
 import { useObservable } from './ObservableContext';
 
 const ConsumerComponent = () => {
   const observable = useObservable();
   const [lastDataReceived, setLastDataReceived] = React.useState('');
 
+  const handleDataReceived = useCallback(data => {
+    setLastDataReceived(data);
+  }, []);
+
   useEffect(() => {
-    const unsubscribe = observable.subscribe(data => {
-      setLastDataReceived(data);
-    });
+    const unsubscribe = observable.subscribe(handleDataReceived);
 
     return () => {
       unsubscribe();
     };
-  }, [observable]);
+  }, [observable, handleDataReceived]);
 
   return (
     <div>
@@ -22,5 +25,4 @@ const ConsumerComponent = () => {
     </div>
   );
 };
-
 export default ConsumerComponent;

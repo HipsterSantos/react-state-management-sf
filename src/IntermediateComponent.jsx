@@ -1,21 +1,22 @@
-
 // IntermediateComponent.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useObservable } from './ObservableContext';
 
 const IntermediateComponent = () => {
   const observable = useObservable();
   const [dataReceived, setDataReceived] = React.useState([]);
-    console.log('data--received--',dataReceived)
+  console.log('data--received--',dataReceived)
+  const handleDataReceived = useCallback(data => {
+    setDataReceived(prevData => [...prevData, data]);
+  }, []);
+
   useEffect(() => {
-    const unsubscribe = observable.subscribe(data => {
-      setDataReceived(prevData => [...prevData, data]);
-    });
+    const unsubscribe = observable.subscribe(handleDataReceived);
 
     return () => {
       unsubscribe();
     };
-  }, [observable]);
+  }, [observable, handleDataReceived]);
 
   return (
     <div>

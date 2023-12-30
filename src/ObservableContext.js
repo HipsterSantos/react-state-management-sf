@@ -1,5 +1,5 @@
 // ObservableContext.js
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 
 const ObservableContext = createContext();
 
@@ -30,17 +30,17 @@ export const useObservable = () => {
 export const ObservableProvider = ({ children }) => {
   const [state, dispatch] = useReducer(observableReducer, { subscribers: [] });
 
-  const subscribe = subscriber => {
+  const subscribe = useCallback(subscriber => {
     dispatch({ type: ActionTypes.SUBSCRIBE, payload: subscriber });
 
     return () => {
       dispatch({ type: ActionTypes.UNSUBSCRIBE, payload: subscriber });
     };
-  };
+  }, []);
 
-  const notify = data => {
+  const notify = useCallback(data => {
     dispatch({ type: ActionTypes.NOTIFY, payload: data });
-  };
+  }, []);
 
   const contextValue = {
     subscribe,
